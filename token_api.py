@@ -74,7 +74,6 @@ def get_quotes():
         global access_token
         access = access_token
         
-    print(access)
     r = requests.get(base+'token/all',
                      headers={
                          'Authorization':'Bearer '+access
