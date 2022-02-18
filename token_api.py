@@ -67,7 +67,7 @@ def get_quotes():
     '''Get all available tokens'''
     res = check_login()
     
-    if 'access' in res['user']:
+    if 'access' in res:
         access = res['user']['access']
     
     else:
@@ -90,3 +90,6 @@ def get_quotes():
             quotes.append(['none','none'])
         
     return quotes
+
+if __name__ == "__main__":
+    print(get_quotes())
