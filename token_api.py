@@ -4,7 +4,8 @@ import dotenv
 
 
 dotenv.load_dotenv()
-token_api_url = os.getenv('PANCAKESWAP_API')
+pancakeswap_api_url = os.getenv('PANCAKESWAP_API')
+coingecko_api_url = os.getenv('COINGECKO_API')
 username = os.getenv('API_USERNAME')
 password = os.getenv('API_PASSWORD')
 base = os.getenv('API_BASE')
@@ -79,17 +80,49 @@ def get_quotes():
                          'Authorization':'Bearer '+access
                     }).json()
     data = r['data']
-    
     quotes = []
     
     for token in data:
-        quote = requests.get(token_api_url+token['contract']).json()
-        if not 'error' in quote:
-            quotes.append([quote['data']['symbol'],quote['data']['price']])
-        else:
-            quotes.append(['none','none'])
+        if token['api_type'] == 'coingecko':
+            quotes.append(get_quote_coingecko(token['api_id']))
+
+        elif token['api_type'] == 'pancakeswap':
+            quotes.append(get_quote_pancakeswap(token['contract']))
         
     return quotes
 
+
+def get_quote_coingecko(api_id):
+    '''Get token info from Coingecko API'''
+    api_param = '?localization=false' \
+                '&ticker=false' \
+                '&market_data=true' \
+                '&community_data=false' \
+                '&developer_data=false' \
+                '&sparkline=false'
+    
+    quote = []
+    res = requests.get(f'{coingecko_api_url}{api_id}{api_param}').json()
+    
+    if not 'error' in res:
+        quote = [res['symbol'],res['market_data']['current_price']['usd']]
+        
+    else:
+        quote = ['none','none']
+        
+    return quote
+
+def get_quote_pancakeswap(contract):
+    '''Get token info from Pancakeswap API'''
+    quote = []
+    res = requests.get(pancakeswap_api_url+contract).json()
+    
+    if not 'error' in res:
+        quote = [res['data']['symbol'],res['data']['price']]
+    else:
+        quote = ['none','none']
+        
+    return quote
+    
 if __name__ == "__main__":
     print(get_quotes())
