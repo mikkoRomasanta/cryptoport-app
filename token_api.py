@@ -49,7 +49,12 @@ def check_login():
                      headers={
                          'Authorization':'Bearer '+refresh_token
                      })
+        
+        if r2.status_code == 401:
+            res = login_api()
+            
         res = r2.json()
+            
         set_token_env(res['access'],refresh_token)
         
     else:
