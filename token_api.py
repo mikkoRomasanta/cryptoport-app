@@ -49,10 +49,11 @@ def check_login():
                      headers={
                          'Authorization':'Bearer '+refresh_token
                      })
+        print(f'r2 is {r2}')
         
         if r2.status_code == 401:
             res = login_api()
-            
+
         res = r2.json()
             
         set_token_env(res['access'],refresh_token)
@@ -74,7 +75,7 @@ def get_quotes():
     res = check_login()
     
     if 'access' in res:
-        access = res['user']['access']
+        access = res['access']
     
     else:
         global access_token
